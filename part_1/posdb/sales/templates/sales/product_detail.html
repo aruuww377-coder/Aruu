@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }} — POS Product</title>
+    <link rel="stylesheet" href="{% static 'css/pos.css' %}">
+</head>
+<body>
+<div class="page-shell">
+    <div class="header">
+        <div class="title-block">
+            <h1>{{ product.name }}</h1>
+            <p>ព័ត៌មានផលិតផល និងស្តុក / price</p>
+        </div>
+        <div class="navbar">
+            <a href="{% url 'product_list' %}">Products</a>
+            <a href="{% url 'order_list' %}">Orders</a>
+            <a href="{% url 'create_order' %}">＋ New Order</a>
+            <a href="/admin/">Admin</a>
+            <form method="post" action="/accounts/logout/" style="display:inline-flex; align-items:center;">
+                {% csrf_token %}
+                <button class="secondary" type="submit">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <article class="detail-card">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+                <div class="product-placeholder">{{ product.name|slice:":1" }}</div>
+            {% endif %}
+        </article>
+        <article class="detail-card detail-content">
+            <div class="detail-content">
+                <span class="badge">{{ product.get_category_display }}</span>
+                <div class="detail-price">${{ product.price }}</div>
+                <p><strong>Barcode:</strong> {{ product.barcode|default:'N/A' }}</p>
+                <p><strong>Stock:</strong> {{ product.stock }} {% if product.stock < 10 %}<span class="stock low">(Low stock!)</span>{% endif %}</p>
+                <p><strong>Status:</strong> {% if product.is_active %}Active{% else %}Inactive{% endif %}</p>
+                <div class="btn-row">
+                    <a class="button" href="{% url 'product_list' %}">← ត្រឡប់</a>
+                    <a class="button" href="{% url 'create_order' %}">＋ New Order</a>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+</body>
+</html>

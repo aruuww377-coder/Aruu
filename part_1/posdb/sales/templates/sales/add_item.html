@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <title>Order #{{ order.pk }} — POS</title>
+    <link rel="stylesheet" href="{% static 'css/pos.css' %}">
+</head>
+<body>
+<div class="page-shell">
+    <div class="header">
+        <div class="title-block">
+            <h1>Order #{{ order.pk }}</h1>
+            <p>Cashier: <strong>{{ order.cashier }}</strong></p>
+        </div>
+        <div class="navbar">
+            <a href="{% url 'product_list' %}">Products</a>
+            <a href="{% url 'order_list' %}">Orders</a>
+            <a href="{% url 'my_orders' %}">My Orders</a>
+            <a href="{% url 'create_order' %}">＋ New Order</a>
+            <a href="/admin/">Admin</a>
+            <form method="post" action="/accounts/logout/" style="display:inline-flex; align-items:center;">
+                {% csrf_token %}
+                <button class="secondary" type="submit">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            {% if item.product.image %}
+                                <img class="item-thumb" src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                            {% else %}
+                                <div class="placeholder-small">{{ item.product.name|slice:":1" }}</div>
+                            {% endif %}
+                            {{ item.product.name }}
+                        </div>
+                    </td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.unit_price }}</td>
+                    <td>${{ item.subtotal }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="color:#888;text-align:center">No items yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <p class="order-summary">Order Total: <strong>${{ order.total }}</strong></p>
+
+    <form class="add" method="post">
+        {% csrf_token %}
+        <div>
+            <label>{{ item_form.product.label }}</label>
+            {{ item_form.product }}
+            {% if item_form.product.errors %}
+            <div style="color: #c53030; font-size: 0.9em; margin-top: 4px;">{{ item_form.product.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div>
+            <label>{{ item_form.quantity.label }}</label>
+            {{ item_form.quantity }}
+            {% if item_form.quantity.errors %}
+            <div style="color: #c53030; font-size: 0.9em; margin-top: 4px;">{{ item_form.quantity.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-actions">
+            <button class="primary" type="submit">＋ Add Item</button>
+        </div>
+    </form>
+
+    <div class="btn-row">
+        <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <button class="secondary" name="mark_paid" type="submit">✔ Mark Order as Paid</button>
+        </form>
+        <a class="button btn-cancel" href="{% url 'cancel_order' order.pk %}">✖ Cancel Order</a>
+    </div>
+</div>
+</body>
+</html>

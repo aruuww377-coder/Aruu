@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <title>🛒 POS — បញ្ជីផលិតផល</title>
+    <link rel="stylesheet" href="{% static 'css/pos.css' %}">
+</head>
+<body>
+<div class="page-shell">
+    <div class="header">
+        <div class="title-block">
+            <h1>🛒 បញ្ជីផលិតផល</h1>
+            <p>{{ products|length }} ផលិតផល active ក្នុងប្រព័ន្ធ</p>
+        </div>
+        <div class="navbar">
+            <a href="{% url 'product_list' %}">Products</a>
+            <a href="{% url 'order_list' %}">Orders</a>
+            <a href="{% url 'my_orders' %}">My Orders</a>
+            <a href="{% url 'create_order' %}">＋ New Order</a>
+            <a href="/admin/">Admin</a>
+            <form method="post" action="/accounts/logout/" style="display:inline-flex; align-items:center;">
+                {% csrf_token %}
+                <button class="secondary" type="submit">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+    {% if products %}
+    <div class="card-grid">
+        {% for product in products %}
+        <article class="card">
+            {% if product.image %}
+            <a href="{% url 'product_detail' product.pk %}"><img src="{{ product.image.url }}" alt="{{ product.name }}"></a>
+            {% else %}
+            <a href="{% url 'product_detail' product.pk %}"><div class="product-placeholder">{{ product.name|slice:":1" }}</div></a>
+            {% endif %}
+            <div class="card-content">
+                <h2 class="product-title"><a href="{% url 'product_detail' product.pk %}">{{ product.name }}</a></h2>
+                <div class="product-meta">
+                    <span class="badge">{{ product.get_category_display }}</span>
+                    {% if product.barcode %}<span>Barcode: {{ product.barcode }}</span>{% endif %}
+                </div>
+                <div class="product-info">
+                    <span class="price">${{ product.price }}</span>
+                    <span class="stock {% if product.stock <= 5 %}low{% endif %}">{% if product.stock <= 5 %}⚠️ ស្តុកទាប: {{ product.stock }}{% else %}ក្នុងស្តុក: {{ product.stock }}{% endif %}</span>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="table-card"><p style="margin:0;color:#475569;">មិនទាន់មានផលិតផលទេ — បន្ថែមតាម <a href="/admin/">Admin</a>។</p></div>
+    {% endif %}
+</div>
+</body>
+</html>
