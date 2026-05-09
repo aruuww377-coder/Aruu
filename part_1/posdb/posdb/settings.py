@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = 'django-insecure-fw61*p#7rj5+*9mlqdzryg((_ai5x!%pcl^4@$xtb=oa#-^gk8'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['aruuu666.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 # ==============================
 # APPLICATIONS
@@ -140,4 +140,13 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'   # after logout → back to login page
 # DEFAULT PRIMARY KEY
 # ==============================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://aruuu666.pythonanywhere.com',
+    'http://aruuu666.pythonanywhere.com',
+]
+
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
